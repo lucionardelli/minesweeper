@@ -154,6 +154,8 @@ class Game(models.Model):
         elif flag == 'F':
             cell.sign = cell.FLAGGED
             cell.save()
+            if self.is_solved:
+                self.game_won()
         elif flag == '?':
             cell.sign = cell.Q_MARK
             cell.save()
