@@ -24,3 +24,7 @@ nohup.out
 
 # DATABASE Configuration file
 db.py
+
+# Ignore the default SQLite database.
+*.sqlite3
+
