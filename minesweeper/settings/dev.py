@@ -25,6 +25,7 @@ CACHES = {
 
 INSTALLED_APPS += (
     'rest_framework_swagger',
+    'django_extensions',
 )
 
 ALLOWED_HOSTS = ('minesweeper-dev', '*')
