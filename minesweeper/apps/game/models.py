@@ -199,7 +199,7 @@ class Game(models.Model):
         return True
 
     def get_api_url(self, request=None):
-        return api_reverse("game-api:game-detail", kwargs={'pk': self.pk}, request=request)
+        return api_reverse("game-api:game-detail", kwargs={'id': self.id}, request=request)
 
 
 

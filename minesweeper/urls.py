@@ -15,7 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url, include
+from rest_framework_jwt.views import obtain_jwt_token
+
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+
+schema_view = get_schema_view(title='GameSweeper API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'^api/auth/login/$', obtain_jwt_token, name='api-login'),
+    url(r'^api/minesweeper/', include('minesweeper.apps.game.api.urls', namespace='game-api')),
 ]
