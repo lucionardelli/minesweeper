@@ -25,6 +25,8 @@ schema_view = get_schema_view(title='GameSweeper API', renderer_classes=[OpenAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    url(r'^api/doc/$', schema_view, name='api-documentation'),
     url(r'^api/auth/login/$', obtain_jwt_token, name='api-login'),
     url(r'^api/minesweeper/', include('minesweeper.apps.game.api.urls', namespace='game-api')),
 ]

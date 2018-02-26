@@ -28,10 +28,10 @@ class GameSerializer(serializers.ModelSerializer):
         return obj.get_api_url(request=request)
 
     def validate_name(self, value):
-        qs = Game.objects.filter(name__iexacts=value)
+        qs = Game.objects.filter(name=value)
         if self.instance:
-            qs = qs.exclude(pk=self.instance.pk)
+            qs = qs.exclude(id=self.instance.id)
         if qs.exists():
-            raise serializers.ValidationError("Some othe game has this name!")
+            raise serializers.ValidationError("Some other game has this name!")
         return value
 
