@@ -34,9 +34,9 @@ class Game(models.Model):
     status          = models.IntegerField(choices=GAME_STATUS, default=PLAYING)
 
     # Board data
-    rows = models.IntegerField(default=9)
-    columns = models.IntegerField(default=9)
-    mines = models.IntegerField(default=10)
+    rows            = models.IntegerField(default=9)
+    columns         = models.IntegerField(default=9)
+    mines           = models.IntegerField(default=10)
 
     @property
     def owner(self):
@@ -64,9 +64,6 @@ class Game(models.Model):
         if self.status == self.PLAYING:
             played_time += (datetime.datetime.now(datetime.timezone.utc) - self.last_action).total_seconds()
         return played_time
-
-    def get_api_url(self, request=None):
-        return api_reverse("api-game:game", kwargs={'pk': self.pk}, request=request)
 
     def as_ascii(self):
         board_string = """
@@ -118,6 +115,7 @@ class Game(models.Model):
         """
         self.elapsed_time = self.played_time
         self.status = self.WON
+        self.finish_date = datetime.datetime.now(datetime.timezone.utc)
         self.save()
 
     def game_lost(self):
@@ -125,6 +123,8 @@ class Game(models.Model):
             Best luck for the next game!
         """
         self.status = self.LOST
+        self.elapsed_time = self.played_time
+        self.finish_date = datetime.datetime.now(datetime.timezone.utc)
         self.save()
 
     def _get_surronding_cells(self, cell):
@@ -197,6 +197,11 @@ class Game(models.Model):
             return False
 
         return True
+
+    def get_api_url(self, request=None):
+        return api_reverse("game-api:game-detail", kwargs={'pk': self.pk}, request=request)
+
+
 
 class Cell(models.Model):
     """ Representation of the cell of a minessweeper game.
