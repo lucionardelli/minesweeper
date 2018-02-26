@@ -1,0 +1,26 @@
+# Don't commit locks nor temporary files
+.~lock*
+*~
+*.swp
+*.swo
+
+# Don't commit compiled files
+*.py[cod]
+
+# Don't commit logs
+*.log
+
+# Environment related stuff
+env
+
+# Do not commit CACHE
+CACHE*
+
+# Usual nohup outup Files:
+nohup.out
+
+# Secretkey for django app
+.minesweeper.SECRETKEY
+
+# DATABASE Configuration file
+db.py
