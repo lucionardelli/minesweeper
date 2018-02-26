@@ -1,4 +1,6 @@
 import random
+import datetime
+import itertools
 
 from django.conf import settings
 from django.db import models
@@ -26,7 +28,8 @@ class Game(models.Model):
     name            = models.CharField(max_length=128, default='')
     user            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     create_date     = models.DateTimeField(auto_now_add=True)
-    last_move       = models.DateTimeField(auto_now=True)
+    finish_date     = models.DateTimeField(null=True)
+    last_action     = models.DateTimeField(auto_now=True)
     elapsed_time    = models.IntegerField(default=0)
     status          = models.IntegerField(choices=GAME_STATUS, default=PLAYING)
 
@@ -42,22 +45,47 @@ class Game(models.Model):
     @property
     def remaining_mines(self):
         """ Count the remaining mines. """
-        return self.mines - sum(1 for cell in self.cells if cell.mine and not self.sign == Cell.FLAGGED)
+        return self.mines - sum(1 for cell in self.cells.filter(mine=True,sign=Cell.FLAGGED))
 
     @property
     def is_solved(self):
         """ Checks if the game have been succesfully solved. """
-        return all((cell.visible or cell.mine) for cell in self.cells)
+        return all((cell.visible or cell.mine) for cell in self.cells.all())
+
+    @property
+    def played_time(self):
+        """ Elapsed played time (i.e. time that the game
+            haven't been in pause since the game
+            have been created).
+
+            TODO : Get Timezone from django settings module. Not this harcoded UTC
+        """
+        played_time = self.elapsed_time
+        if self.status == self.PLAYING:
+            played_time += (datetime.datetime.now(datetime.timezone.utc) - self.last_action).total_seconds()
+        return played_time
 
     def get_api_url(self, request=None):
         return api_reverse("api-game:game", kwargs={'pk': self.pk}, request=request)
 
-    def game_as_ascii(self):
+    def as_ascii(self):
         board_string = """
             Mines: {mines}/{remaining_mines}
             Status: {status}
             Time played (in seconds): {time}
-        """
+            --------------------------------""".format(mines=self.mines,
+                remaining_mines=self.remaining_mines,
+                status=self.status,
+                time=self.played_time)
+        for row in range(self.rows):
+            board_string += '\n'
+            for col in range(self.columns):
+                cell = Cell.objects.get(game=self,  row=row, column=col)
+                cell_str = str(cell)
+                if ' ' == cell_str:
+                    cell_str = str(self._count_surrounding_mines(cell))
+                board_string += cell_str
+
         return board_string
 
     def save(self, *args, **kwargs):
@@ -79,31 +107,35 @@ class Game(models.Model):
         cells = []
         for row in range(self.rows):
             for col in range(self.columns):
-                cells.append( Cell.objects.create(game=self.id, row=row, column=col))
-        for mine in random.choices(cells, k=self.mines):
+                cells.append( Cell.objects.create(game=self, row=row, column=col))
+        for mine in random.sample(cells, self.mines):
             mine.mine = True
             mine.save()
 
-    def game_lost(self):
+    def game_won(self):
         """ Changes status of the game to WON GAME.
             Kudos!
         """
-        self.status = WON
+        self.elapsed_time = self.played_time
+        self.status = self.WON
         self.save()
 
     def game_lost(self):
         """ Changes status of the game to LOST GAME.
             Best luck for the next game!
         """
-        self.status = LOST
+        self.status = self.LOST
         self.save()
 
     def _get_surronding_cells(self, cell):
         """ Yields surronding cells taking care of "borders". """
-        for r, c in itertools.product(range(cell.row-1, cell.row+2), range(cell.col-1, cell.col+2)):
-            if (r == cell.row and c == cell.col) or r > self.rows or c > self.cols:
+        for r, c in itertools.product(range(cell.row-1, cell.row+2), range(cell.column-1, cell.column+2)):
+            if ((r == cell.row and c == cell.column)
+                    or r + 1 > self.rows
+                    or c + 1 > self.columns
+                    or r < 0 or c < 0):
                 continue
-            yield Cell.objects.get(game=self.id, row=r, col=c)
+            yield Cell.objects.get(game=self, row=r, column=c)
 
     def _count_surrounding_mines(self, cell):
         """ Count the surronding cells that have mines. """
@@ -117,9 +149,9 @@ class Game(models.Model):
         if not cell.visible:
            cell.visible = True
            cell.save()
-           if 0 == self._count_surronding_mines(row, col):
-               for nei in self._get_surronding_mines(row, col):
-                   self._reveal_cell(nei.row, nei.col)
+           if 0 == self._count_surrounding_mines(cell):
+               for nei in self._get_surronding_cells(cell):
+                   self._reveal_cell(nei)
 
     def make_move(self, row, col, sign=None):
         """ Make a move in the minesweeper's game.
@@ -140,26 +172,25 @@ class Game(models.Model):
         Returns:
             bool: True if a valid move was made, False otherwise.
         """
-        cell = Cell.objects.filter(game=self.id, row=row, col=col)
-        if not cell:
-            return False
-
-        if flag is None:
+        cell = Cell.objects.get(game=self, row=row, column=col)
+        if sign is None:
             if cell.mine:
+                cell.visible = True
+                cell.save()
                 self.game_lost()
             else:
                 self._reveal_cell(cell)
                 if self.is_solved:
                     self.game_won()
-        elif flag == 'F':
+        elif sign == 'F':
             cell.sign = cell.FLAGGED
             cell.save()
             if self.is_solved:
                 self.game_won()
-        elif flag == '?':
+        elif sign == '?':
             cell.sign = cell.Q_MARK
             cell.save()
-        elif flag == '':
+        elif sign == '':
             cell.sign = CELL.NO_SIGN
             cell.save()
         else:
@@ -188,3 +219,15 @@ class Cell(models.Model):
     game = models.ForeignKey('game.Game', on_delete=models.CASCADE, related_name='cells')
     row = models.IntegerField(db_index=True)
     column = models.IntegerField(db_index=True)
+
+    def __str__(self):
+        if self.sign == self.Q_MARK:
+            return '?'
+        elif self.sign == self.FLAGGED:
+            return 'F'
+        elif not self.visible:
+            return 'x'
+        elif self.mine:
+            return 'B'
+        else:
+            return ' '
