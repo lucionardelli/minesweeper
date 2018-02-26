@@ -152,7 +152,9 @@ LOGIN_REDIRECT_URL = 'campaign/'
 try:
     SECRET_KEY = open(SECRET_FILE).read().strip()
 except IOError:
-    raise Exception('Cannot open file `%s` for writing.' % SECRET_FILE) from IOError
+    # NOTE Next line should be uncommented in a real environment
+    #raise Exception('Cannot open file `%s` for writing.' % SECRET_FILE) from IOError
+    SECRET_KEY = '35+wd7#uw1qvea)#*$9=@d0ee6v&l32by(7@oq-1c_3@d)k__q'
 ########## END KEY CONFIGURATION
 
 ########## LOG CONFIGURATION
