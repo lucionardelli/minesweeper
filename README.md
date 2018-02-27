@@ -8,8 +8,8 @@ The api have been deploy in Heroku, and can be found [https://ln-minesweeper-api
 
 ## API endpoints
 
-### Authentication
-- api/auth/login?user={}&password={}
+### Authentication (POST)
+- api/auth/login/
 
 ### List all games (GET)
 - api/minesweeper/ 
@@ -23,7 +23,7 @@ The api have been deploy in Heroku, and can be found [https://ln-minesweeper-api
 ### Let's play! (PUT)
 - api/minesweeper/{id} 
 
-Implementation Notes
+#### Implementation Notes
 
 API for making a new play on the minesweeper game.
 ##### Args:
@@ -43,6 +43,104 @@ API for making a new play on the minesweeper game.
 
 - api/doc/
 
+## Minimal API Client
+
+As a way of manually testing, an API client is added (implemented in PHP).
+It has limited funtionalities and it's clearly not finished but it can be used
+to test the overall functionality of the API.
+
+
+### Client Requirements
+
+The client have been developed in PHP using the `php-curl` library.
+
+```bash
+sudo apt-get install php-curl
+```
+
+### Credentials
+A handfull user have been created to be able to test the API.
+
+ - username: minesweeper
+ - password: TryNotExplode
+
+### Implementd functionalities
+
+#### Login
+Login with given credentials. The game won't be available otherwhise.
+The token is save inside the client so there's no need to store it 
+externally.
+
+    Method Name:
+        login
+    Argumnets:
+        username: string
+        password: string
+    Returns:
+        String with the authenticated JWT.
+        
+#### Get Games
+Posibility to get the list of all games.
+
+    Method Name:
+        get_games
+    Argumnets:
+        No arguments
+    Returns:
+        Array-like object with all the games
+
+#### Get Game
+Posibility to retrieve a single game.
+The reference to the game is keept internally so there's no need to track it
+manually.
+
+    Method Name:
+        get_game
+    Argumnets:
+        id: integer
+    Returns:
+        Array-like object with the specified game
+
+#### New Game
+Create and play a new game.
+The reference to the game is keept internally so there's no need to track it
+manually.
+
+    Method Name:
+        create_game
+    Argumnets:
+        rows: integer
+        columns: integer
+        mines: integer
+    Returns:
+        Array-like object with the specified game
+
+
+#### Start a new Game
+Posibility to retrieve a single game.
+The reference to the game is keept internally so there's no need to track it
+manually.
+
+    Method Name:
+        new_game
+    Argumnets:
+        id: integer
+    Returns:
+        ID of the newly created game
+
+#### Start a new Game
+Play the internally selected game.
+
+    Method Name:
+        play
+    Argumnets:
+        row: integer
+        column: integer
+        flag: string (NOT IMPLEMENTED - ignored)
+    Returns:
+        Array-like object with the specified game
+        after making the given cell visible.
+
 ## Goals
 
 The development was part of a challenge and the goals where not completly achieved.
@@ -50,8 +148,8 @@ The majority of the requirements are implemented but they are all in a developme
 point. A deep testing, documenting and debugging is due.
 
 - [80%] Design and implement  a documented RESTful API for the game (think of a mobile app for your API)
-- [-] Implement an API client library for the API designed above. Ideally, in a different language, of your preference, to the one used for the API
-- [99%] When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
+- [50%] Implement an API client library for the API designed above. Ideally, in a different language, of your preference, to the one used for the API
+- [95%] When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
 - [50%] Ability to 'flag' a cell with a question mark or red flag
 - [90%] Detect when game is over
 - [80%] Persistence
@@ -60,4 +158,6 @@ point. A deep testing, documenting and debugging is due.
 - [90%] Ability to select the game parameters: number of rows, columns, and mines
 - [60%] Ability to support multiple users/accounts
 
-The estimated dedication in the project was 6 hours
+### Time spent
+
+The estimated dedication in the project was ~7 hours.
