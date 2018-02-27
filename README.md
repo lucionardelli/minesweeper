@@ -2,7 +2,11 @@
 
 Develop the classic game of [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game))
 
-## API Methods
+## API
+
+The api have been deploy in Heroku, and can be found [https://ln-minesweeper-api.herokuapp.com/api/](https://ln-minesweeper-api.herokuapp.com/api/)
+
+## API endpoints
 
 ### Authentication
 - api/auth/login?user={}&password={}
@@ -39,20 +43,21 @@ API for making a new play on the minesweeper game.
 
 - api/doc/
 
+## Goals
 
-## What to build
-- [x] Design and implement  a documented RESTful API for the game (think of a mobile app for your API)
-- [ ] Implement an API client library for the API designed above. Ideally, in a different language, of your preference, to the one used for the API
-- [x] When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
-- [x] Ability to 'flag' a cell with a question mark or red flag
-- [x] Detect when game is over
-- [x] Persistence
-- [x] Time tracking
-- [x] Ability to start a new game and preserve/resume the old ones
-- [x] Ability to select the game parameters: number of rows, columns, and mines
-- [x] Ability to support multiple users/accounts
+The development was part of a challenge and the goals where not completly achieved.
+The majority of the requirements are implemented but they are all in a development
+point. A deep testing, documenting and debugging is due.
 
-### Contribution guidelines ###
+- [80%] Design and implement  a documented RESTful API for the game (think of a mobile app for your API)
+- [-] Implement an API client library for the API designed above. Ideally, in a different language, of your preference, to the one used for the API
+- [99%] When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
+- [50%] Ability to 'flag' a cell with a question mark or red flag
+- [90%] Detect when game is over
+- [80%] Persistence
+- [80%] Time tracking
+- [90%] Ability to start a new game and preserve/resume the old ones
+- [90%] Ability to select the game parameters: number of rows, columns, and mines
+- [60%] Ability to support multiple users/accounts
 
-* Writing tests
-* Code review
+The estimated dedication in the project was 6 hours
