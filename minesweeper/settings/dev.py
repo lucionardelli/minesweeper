@@ -3,7 +3,6 @@ from os.path import join, normpath
 from os import environ
 
 from .common import *
-
 from .db import DATABASES
 
 ########## DEBUG CONFIGURATION

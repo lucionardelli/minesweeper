@@ -12,6 +12,7 @@
 
 # Environment related stuff
 env
+.env
 
 # Do not commit CACHE
 CACHE*

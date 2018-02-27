@@ -7,13 +7,13 @@ from os.path import abspath, basename, dirname, join, normpath
 
 ########## PATH CONFIGURATION
 # Absolute filesystem path to this Django project directory.
-DJANGO_ROOT = dirname(dirname(abspath(__file__)))
+BASE_DIR = dirname(dirname(abspath(__file__)))
 
 # Site name.
-SITE_NAME = basename(DJANGO_ROOT)
+SITE_NAME = basename(BASE_DIR)
 
 # Absolute filesystem path to the top-level project folder.
-SITE_ROOT = dirname(DJANGO_ROOT)
+SITE_ROOT = dirname(BASE_DIR)
 
 # Absolute filesystem path to the secret file which holds this project's
 # SECRET_KEY. Will be auto-generated the first time this file is interpreted.
@@ -22,8 +22,8 @@ SECRET_FILE = normpath(join(SITE_ROOT, '.minesweeper.SECRETKEY'))
 # Add all necessary filesystem paths to our system path so that we can use
 # python import statements.
 sys.path.append(SITE_ROOT)
-sys.path.append(normpath(join(DJANGO_ROOT, 'apps')))
-sys.path.append(normpath(join(DJANGO_ROOT, 'libs')))
+sys.path.append(normpath(join(BASE_DIR, 'apps')))
+sys.path.append(normpath(join(BASE_DIR, 'libs')))
 ########## END PATH CONFIGURATION
 
 
