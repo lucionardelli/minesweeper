@@ -1,7 +1,6 @@
 """Common settings and globals."""
 
 import sys
-from datetime import timedelta
 import logging
 from os.path import abspath, basename, dirname, join, normpath
 
@@ -103,6 +102,7 @@ TEMPLATES = [
 ########## MIDDLEWARE CONFIGURATION
 MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
